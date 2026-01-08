@@ -1,19 +1,19 @@
-import { Interaction } from "discord.js";
+import { Interaction, MessageFlags } from "discord.js";
 import { Event } from "../@types";
 import { Bot } from "../structures/Bot";
 
 const event: Event = {
   name: "interactionCreate",
-  async execute(interaction: Interaction) {
-    if (!interaction.isChatInputCommand()) return;
+  async execute(inter: Interaction) {
+    if (!inter.isChatInputCommand()) return;
 
-    const client = interaction.client as Bot;
-    const command = client.commands.get(interaction.commandName);
+    const client = inter.client as Bot;
+    const command = client.commands.get(inter.commandName);
 
     if (!command) {
-      await interaction.reply({
+      await inter.reply({
         content: "Command not found.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -21,30 +21,27 @@ const event: Event = {
     if (
       command.ownerOnly &&
       client.ownerId &&
-      interaction.user.id !== client.ownerId
+      inter.user.id !== client.ownerId
     ) {
-      await interaction.reply({
+      await inter.reply({
         content: "This command is restricted to the bot owner.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
 
     try {
-      await command.execute(interaction);
+      await command.execute(inter);
     } catch (error) {
-      console.error(
-        `Error executing command ${interaction.commandName}:`,
-        error
-      );
-      if (interaction.replied || interaction.deferred) {
-        await interaction.editReply({
+      console.error(`Error executing command ${inter.commandName}:`, error);
+      if (inter.replied || inter.deferred) {
+        await inter.editReply({
           content: "There was an error while executing this command.",
         });
       } else {
-        await interaction.reply({
+        await inter.reply({
           content: "There was an error while executing this command.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
     }

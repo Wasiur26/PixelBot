@@ -14,12 +14,10 @@ const client = new Bot({
   ],
 });
 
-// Optionally set owner ID
 if (process.env.OWNER_ID) {
   client.ownerId = process.env.OWNER_ID;
 }
 
-// Load commands and events
 (async () => {
   await client.start();
 })();

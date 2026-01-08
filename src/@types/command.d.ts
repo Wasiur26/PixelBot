@@ -1,5 +1,6 @@
 import {
   ChatInputCommandInteraction,
+  AutocompleteInteraction,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
   SlashCommandSubcommandsOnlyBuilder,
@@ -13,5 +14,5 @@ export type SlashCommandData =
 export type Command = {
   data: SlashCommandData;
   ownerOnly?: boolean;
-  execute: (interaction: ChatInputCommandInteraction) => Promise<void> | void;
+  execute: (inter: ChatInputCommandInteraction) => Promise<void> | void;
 };

@@ -18,10 +18,6 @@ export class Bot extends Client {
     this.xp = new xpModule(this.db);
   }
 
-  /**
-   * Load all commands from the commands directory
-   * @param commandsPath - Path to the commands directory
-   */
   public async loadCommands(commandsPath: string): Promise<void> {
     const fullPath = path.isAbsolute(commandsPath)
       ? commandsPath
@@ -32,13 +28,24 @@ export class Bot extends Client {
       return;
     }
 
-    const commandFiles = fs
-      .readdirSync(fullPath)
-      .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
+    const getFilesRecursively = (dir: string): string[] => {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      const files: string[] = [];
+      for (const entry of entries) {
+        const res = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          files.push(...getFilesRecursively(res));
+        } else if (entry.name.endsWith(".ts") || entry.name.endsWith(".js")) {
+          files.push(res);
+        }
+      }
+      return files;
+    };
 
-    for (const file of commandFiles) {
+    const commandFiles = getFilesRecursively(fullPath);
+
+    for (const filePath of commandFiles) {
       try {
-        const filePath = path.join(fullPath, file);
         const requiredModule = require(filePath);
         const command: Command = requiredModule.default ?? requiredModule;
 
@@ -46,20 +53,16 @@ export class Bot extends Client {
           this.commands.set(command.data.name, command);
           console.info(`Loaded command: ${command.data.name}`);
         } else {
-          console.warn(`Command file ${file} is missing a name property`);
+          console.warn(`Command file ${filePath} is missing a name property`);
         }
       } catch (error) {
-        console.error(`Failed to load command ${file}:`, error);
+        console.error(`Failed to load command ${filePath}:`, error);
       }
     }
 
     console.info(`Loaded ${this.commands.size} command(s)`);
   }
 
-  /**
-   * Load all events from the events directory
-   * @param eventsPath - Path to the events directory
-   */
   public async loadEvents(eventsPath: string): Promise<void> {
     const fullPath = path.isAbsolute(eventsPath)
       ? eventsPath
@@ -96,13 +99,10 @@ export class Bot extends Client {
     }
   }
 
-  /**
-   * Register slash commands with Discord's API
-   */
   public async registerApplicationCommands(): Promise<void> {
     const token = process.env.DISCORD_TOKEN;
     const clientId = process.env.CLIENT_ID;
-    const guildId = process.env.GUILD_ID;
+    const ownerGuildId = process.env.OWNER_GUILD_ID;
 
     if (!token || !clientId) {
       console.warn(
@@ -117,36 +117,50 @@ export class Bot extends Client {
     }
 
     const rest = new REST({ version: "10" }).setToken(token);
-    const body = Array.from(this.commands.values()).map((command) =>
-      command.data.toJSON()
-    );
-    const route = guildId
-      ? Routes.applicationGuildCommands(clientId, guildId)
-      : Routes.applicationCommands(clientId);
+
+    const ownerCommands = Array.from(this.commands.values())
+      .filter((cmd) => cmd.ownerOnly)
+      .map((cmd) => cmd.data.toJSON());
+
+    const regularCommands = Array.from(this.commands.values())
+      .filter((cmd) => !cmd.ownerOnly)
+      .map((cmd) => cmd.data.toJSON());
 
     try {
-      await rest.put(route, { body });
-      console.info(
-        `Registered ${body.length} slash command(s) ${
-          guildId ? `for guild ${guildId}` : "globally"
-        }.`
-      );
+      if (regularCommands.length > 0) {
+        const route = Routes.applicationCommands(clientId);
+
+        await rest.put(route, { body: regularCommands });
+        console.info(`Registered ${regularCommands.length} commands.`);
+      }
+
+      if (ownerCommands.length > 0) {
+        if (!ownerGuildId) {
+          console.warn(
+            "OWNER_GUILD_ID not set; owner-only commands will not be registered."
+          );
+        } else {
+          const ownerRoute = Routes.applicationGuildCommands(
+            clientId,
+            ownerGuildId
+          );
+          await rest.put(ownerRoute, { body: ownerCommands });
+          console.info(`Registered ${ownerCommands.length} dev command(s).`);
+        }
+      }
     } catch (error) {
       console.error("Failed to register application commands:", error);
     }
   }
 
-  /**
-   * Start the bot
-   */
   public async start(): Promise<void> {
     try {
       await this.loadEvents(path.join(__dirname, "..", "events"));
       await this.loadCommands(path.join(__dirname, "..", "commands"));
       await this.registerApplicationCommands();
       await this.login(process.env.DISCORD_TOKEN);
-      const guildId = '768366277575442442';
-      this.guilds.cache.get(guildId)?.leave()
+      const guildId = "768366277575442442";
+      this.guilds.cache.get(guildId)?.leave();
     } catch (error) {
       console.error("Failed to login:", error);
       process.exit(1);
