@@ -4,7 +4,7 @@
   "description": "A Discord bot built with TypeScript",
   "main": "dist/index.js",
   "scripts": {
-    "start": "npx ts-node -r dotenv/config -r logger ./src/main.ts",
+    "start": "tsx -r dotenv/config -r logger ./src/main.ts",
     "build": "tsc",
     "dev": "ts-node src/index.ts",
     "watch": "tsc --watch"
@@ -25,8 +25,14 @@
     "mysql2": "^3.16.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/node": "^20.10.5",
-    "ts-node": "^10.9.2",
+    "@typescript-eslint/eslint-plugin": "^8.52.0",
+    "@typescript-eslint/parser": "^8.52.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^17.0.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.3.3"
   }
 }

@@ -1,6 +1,7 @@
-import { Interaction, MessageFlags } from "discord.js";
-import { Event } from "../@types";
-import { Bot } from "../structures/Bot";
+import { MessageFlags } from "discord.js";
+import type { Event } from "../@types";
+import type { Bot } from "../structures/Bot";
+import type { Interaction } from "discord.js";
 
 const event: Event = {
   name: "interactionCreate",

@@ -1,19 +1,15 @@
-import { Events, GuildMember } from "discord.js";
-import { Event } from "../@types";
+import { Events } from "discord.js";
 import autorole from "../handlers/autorole";
 import welcomecard from "../handlers/welcomecard";
+import type { Event } from "../@types";
+import type { GuildMember } from "discord.js";
 
-const event : Event= {
+const event: Event = {
   name: Events.GuildMemberAdd,
   once: false,
-  async execute(member: GuildMember) {
-    const username = member.user.username;
-    const avatarUrl = member.user.displayAvatarURL({ extension: "png", size: 256 });
-    const memberCount = member.guild.memberCount;
-    const backgroundPath = "../../public/bg.png";
-
+  execute(member: GuildMember) {
     autorole(member);
-    welcomecard(member);
+    void welcomecard(member);
   },
 };
 

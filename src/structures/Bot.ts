@@ -1,9 +1,10 @@
-import { Client, Collection, REST, Routes } from "discord.js";
-import { ClientOptions, Event, Command } from "../@types";
-import path from "path";
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import fs from "fs";
+import path from "path";
+import { Client, Collection, REST, Routes } from "discord.js";
 import { dbModule } from "../modules/db";
 import { xpModule } from "../modules/xp";
+import type { ClientOptions, Command, Event } from "../@types";
 
 export class Bot extends Client {
   public commands: Collection<string, Command>;
@@ -18,7 +19,7 @@ export class Bot extends Client {
     this.xp = new xpModule(this.db);
   }
 
-  public async loadCommands(commandsPath: string): Promise<void> {
+  public loadCommands(commandsPath: string): void {
     const fullPath = path.isAbsolute(commandsPath)
       ? commandsPath
       : path.join(__dirname, "..", commandsPath);
@@ -49,7 +50,7 @@ export class Bot extends Client {
         const requiredModule = require(filePath);
         const command: Command = requiredModule.default ?? requiredModule;
 
-        if (command?.data?.name) {
+        if (command.data.name) {
           this.commands.set(command.data.name, command);
           console.info(`Loaded command: ${command.data.name}`);
         } else {
@@ -63,7 +64,7 @@ export class Bot extends Client {
     console.info(`Loaded ${this.commands.size} command(s)`);
   }
 
-  public async loadEvents(eventsPath: string): Promise<void> {
+  public loadEvents(eventsPath: string): void {
     const fullPath = path.isAbsolute(eventsPath)
       ? eventsPath
       : path.join(__dirname, "..", eventsPath);
@@ -155,12 +156,10 @@ export class Bot extends Client {
 
   public async start(): Promise<void> {
     try {
-      await this.loadEvents(path.join(__dirname, "..", "events"));
-      await this.loadCommands(path.join(__dirname, "..", "commands"));
+      this.loadEvents(path.join(__dirname, "..", "events"));
+      this.loadCommands(path.join(__dirname, "..", "commands"));
       await this.registerApplicationCommands();
       await this.login(process.env.DISCORD_TOKEN);
-      const guildId = "768366277575442442";
-      this.guilds.cache.get(guildId)?.leave();
     } catch (error) {
       console.error("Failed to login:", error);
       process.exit(1);

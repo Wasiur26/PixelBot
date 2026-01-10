@@ -1,7 +1,8 @@
-import { createPool, Pool, } from "mysql2/promise";
+import { createPool } from "mysql2/promise";
+import type { Pool } from "mysql2/promise";
 
 export class dbModule {
-  private pool : Pool;
+  private pool: Pool;
   constructor() {
     this.pool = createPool({
       host: process.env.HOST,

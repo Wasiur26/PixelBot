@@ -4,7 +4,6 @@ import { Bot } from "./structures/Bot";
 
 dotenv.config();
 
-// Initialize custom client
 const client = new Bot({
   intents: [
     GatewayIntentBits.Guilds,
@@ -18,6 +17,6 @@ if (process.env.OWNER_ID) {
   client.ownerId = process.env.OWNER_ID;
 }
 
-(async () => {
+void (async () => {
   await client.start();
 })();

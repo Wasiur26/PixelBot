@@ -1,4 +1,4 @@
-import { GuildMember } from "discord.js";
+import type { GuildMember } from "discord.js";
 
 export default function autorole(member: GuildMember) {
   const role = process.env.AUTO_ROLE_ID as string;

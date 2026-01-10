@@ -1,4 +1,4 @@
-import { ClientOptions as DiscordClientOptions } from "discord.js";
+import type { ClientOptions as DiscordClientOptions } from "discord.js";
 export type ClientOptions = DiscordClientOptions & {
   ownerId?: string;
-}
+};

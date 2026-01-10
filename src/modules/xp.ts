@@ -1,4 +1,4 @@
-import { dbModule } from "./db";
+import type { dbModule } from "./db";
 
 export class xpModule {
   private db: dbModule;
@@ -8,7 +8,7 @@ export class xpModule {
   }
 
   private xpForLevel(level: number): number {
-    return 5 * (level ** 2) + 50 * level + 100;
+    return 5 * level ** 2 + 50 * level + 100;
   }
 
   public async giveXP(userId: string): Promise<void> {

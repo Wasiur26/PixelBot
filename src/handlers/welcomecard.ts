@@ -1,11 +1,8 @@
-import {
-  createCanvas,
-  loadImage,
-  registerFont,
-  CanvasRenderingContext2D,
-} from "canvas";
-import { AttachmentBuilder, GuildMember } from "discord.js";
 import path from "path";
+import { createCanvas, loadImage, registerFont } from "canvas";
+import { AttachmentBuilder } from "discord.js";
+import type { CanvasRenderingContext2D } from "canvas";
+import type { GuildMember } from "discord.js";
 
 const fontsDir = path.join(process.cwd(), "fonts");
 registerFont(path.join(fontsDir, "Anton.ttf"), {
@@ -41,7 +38,7 @@ export default async function (member: GuildMember) {
     process.env.WELCOME_CHANNEL_ID || ""
   );
   if (channel && channel.isTextBased()) {
-    channel.send({ files: [attachment] });
+    void channel.send({ files: [attachment] });
   }
 }
 

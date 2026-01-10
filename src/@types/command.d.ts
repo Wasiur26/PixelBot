@@ -1,6 +1,5 @@
-import {
+import type {
   ChatInputCommandInteraction,
-  AutocompleteInteraction,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
   SlashCommandSubcommandsOnlyBuilder,

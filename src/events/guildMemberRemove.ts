@@ -1,11 +1,12 @@
-import { Events, GuildMember } from "discord.js";
-import { Event } from "../@types";
+import { Events } from "discord.js";
 import leavemessage from "../handlers/leavemessage";
+import type { Event } from "../@types";
+import type { GuildMember } from "discord.js";
 
-const event : Event= {
+const event: Event = {
   name: Events.GuildMemberRemove,
   once: false,
-  async execute(member: GuildMember) {
+  execute(member: GuildMember) {
     leavemessage(member);
   },
 };

@@ -1,10 +1,11 @@
-import { Events, Message } from "discord.js";
-import { Event } from "../@types";
+import { Events } from "discord.js";
+import type { Event } from "../@types";
+import type { Message } from "discord.js";
 
 const event: Event = {
   name: Events.MessageCreate,
   once: false,
-  async execute(message: Message) {
+  execute(message: Message) {
     if (message.author.bot) return;
   },
 };
