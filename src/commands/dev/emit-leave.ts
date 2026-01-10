@@ -4,19 +4,35 @@ import type { Command } from "../../@types";
 const command: Command = {
   data: new SlashCommandBuilder()
     .setName("emit-leave")
-    .setDescription("Emits a guild member leave event for testing purposes."),
+    .setDescription("Emits a guild member leave event for testing purposes.")
+    .addStringOption((option) =>
+      option
+        .setName("guild-id")
+        .setDescription("The guild ID to emit the event in.")
+        .setRequired(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName("user-id")
+        .setDescription("The user ID of the member to emit the event for.")
+        .setRequired(false)
+    ),
   ownerOnly: true,
   async execute(inter) {
-    const guild = inter.guild;
-    if (!guild) {
+    let guild;
+    try {
+      guild = await inter.client.guilds.fetch(
+        inter.options.getString("guild-id", true)
+      );
+    } catch {
       await inter.reply({
-        content: "This command can only be used in a guild.",
+        content: "Guild not found.",
         flags: MessageFlags.Ephemeral,
       });
       return;
     }
-
-    const member = await guild.members.fetch(inter.user.id);
+    const userId = inter.options.getString("user-id") ?? inter.user.id;
+    const member = await guild.members.fetch(userId);
     inter.client.emit(Events.GuildMemberRemove, member);
     await inter.reply({
       content: "Emitted guild member leave event.",

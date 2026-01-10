@@ -1,8 +1,5 @@
 import { GatewayIntentBits } from "discord.js";
-import dotenv from "dotenv";
 import { Bot } from "./structures/Bot";
-
-dotenv.config();
 
 const client = new Bot({
   intents: [
