@@ -11,7 +11,6 @@ async function download() {
       extractAudio: true,
       audioFormat: "mp3",
       output: output,
-      // yt-dlp automatically handles the PoToken/Bot detection
     });
     console.log("✅ Finished! Check output.mp3");
   } catch (e) {

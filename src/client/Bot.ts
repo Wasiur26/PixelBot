@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import fs from "fs";
 import path from "path";
+import { Player } from "discord-player";
 import { Client, Collection, REST, Routes } from "discord.js";
 import { dbModule } from "../modules/db";
 import { xpModule } from "../modules/xp";
+import { YoutubeExtractor } from "../player/extractor";
 import type { ClientOptions, Command, Event } from "../@types";
 
 export class Bot extends Client {
@@ -11,12 +13,15 @@ export class Bot extends Client {
   public ownerId?: string;
   public db: dbModule;
   public xp: xpModule;
+  private player: Player;
 
   constructor(options: ClientOptions) {
     super(options);
     this.commands = new Collection();
     this.db = new dbModule();
     this.xp = new xpModule(this.db);
+    this.player = new Player(this);
+    void this.player.extractors.register(YoutubeExtractor, {});
   }
 
   public loadCommands(commandsPath: string): void {
