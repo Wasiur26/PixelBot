@@ -19,12 +19,10 @@ const command: Command = {
     ),
   ownerOnly: true,
   async execute(inter) {
-    let guild;
-    try {
-      guild = await inter.client.guilds.fetch(
-        inter.options.getString("guild-id", true)
-      );
-    } catch {
+    const guild = await inter.client.guilds
+      .fetch(inter.options.getString("guild-id", true))
+      .catch(() => null);
+    if (!guild) {
       await inter.reply({
         content: "Guild not found.",
         flags: MessageFlags.Ephemeral,
