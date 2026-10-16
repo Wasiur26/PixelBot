@@ -158,8 +158,8 @@ export class Bot extends Client {
     try {
       this.loadEvents(path.join(__dirname, "..", "events"));
       this.loadCommands(path.join(__dirname, "..", "commands"));
-      await this.registerApplicationCommands();
       await this.login(process.env.DISCORD_TOKEN);
+      await this.registerApplicationCommands();
     } catch (error) {
       console.error("Failed to login:", error);
       process.exit(1);
