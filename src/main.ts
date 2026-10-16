@@ -1,4 +1,5 @@
 import { GatewayIntentBits } from "discord.js";
+import express from "express";
 import { Bot } from "./client/Bot";
 
 const client = new Bot({
@@ -9,6 +10,17 @@ const client = new Bot({
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildVoiceStates,
   ],
+});
+
+const app = express();
+const port = process.env.HTTP_PORT;
+
+app.get("/health", (req, res) => {
+  res.status(200).send("Alive");
+});
+
+app.listen(port, () => {
+  console.log(`HTTP server is running on port ${port}`);
 });
 
 if (process.env.OWNER_ID) {
