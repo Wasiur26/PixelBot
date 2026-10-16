@@ -158,6 +158,8 @@ export class Bot extends Client {
     try {
       this.loadEvents(path.join(__dirname, "..", "events"));
       this.loadCommands(path.join(__dirname, "..", "commands"));
+      const res = await fetch("https://discord.com/api/v10/gateway");
+      console.info(`Discord Gateway HTTP Status: ${res.status}`);
       await this.login(process.env.DISCORD_TOKEN);
       await this.registerApplicationCommands();
     } catch (error) {
